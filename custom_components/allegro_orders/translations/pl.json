@@ -35,7 +35,8 @@
       "auth_failed": "Logowanie nieudane: {error}",
       "cannot_connect": "Nie udało się połączyć z Allegro.",
       "reauth_successful": "Zalogowano ponownie.",
-      "wrong_account": "Zalogowano na inne konto Allegro niż to w integracji."
+      "wrong_account": "Zalogowano na inne konto Allegro niż to w integracji.",
+      "orders_forbidden": "Brak dostępu do zamówień – sprawdź uprawnienia aplikacji w Allegro (odczyt zamówień). Szczegóły: {error}"
     }
   },
   "options": {

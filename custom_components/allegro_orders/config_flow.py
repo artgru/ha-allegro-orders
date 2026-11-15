@@ -59,6 +59,19 @@ def _creds_schema(defaults: Mapping[str, Any]) -> vol.Schema:
     )
 
 
+def _jwt_claims(token: str) -> dict[str, Any]:
+    """Odczyt danych z access tokenu (JWT) bez weryfikacji podpisu."""
+    import base64
+    import json
+
+    try:
+        payload = token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        return json.loads(base64.urlsafe_b64decode(payload))
+    except (IndexError, ValueError):
+        return {}
+
+
 class AllegroOrdersConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
@@ -134,21 +147,34 @@ class AllegroOrdersConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_finish(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         assert self._auth and self._token
         client = AllegroClient(self._auth, self._token)
+        claims = _jwt_claims(client.token["access_token"])
+        user_id = str(claims.get("user_name") or claims.get("sub") or "")
+        title = "Allegro"
         try:
             me = await client.get_me()
+            user_id = str(me.get("id") or user_id)
+            title = me.get("login") or title
         except AllegroError as err:
-            _LOGGER.warning("Allegro /me: %s", err)
-            return self.async_abort(reason="cannot_connect")
+            # /me wymaga uprawnienia do profilu – nie jest potrzebne do zamówień
+            _LOGGER.info("Allegro /me niedostępne (%s) – używam danych z tokenu", err)
+
+        # sprawdzenie, że zamówienia są dostępne
+        try:
+            await client.get("/order/checkout-forms", [("limit", "1")])
+        except AllegroError as err:
+            _LOGGER.warning("Allegro: brak dostępu do zamówień: %s", err)
+            self._error = str(err)
+            return self.async_abort(reason="orders_forbidden", description_placeholders={"error": str(err)[:300]})
 
         data = {**self._creds, CONF_TOKEN: client.token}
-        await self.async_set_unique_id(str(me.get("id")))
+        await self.async_set_unique_id(user_id or client.token["refresh_token"][:16])
 
         if self.source == SOURCE_REAUTH:
             self._abort_if_unique_id_mismatch(reason="wrong_account")
             return self.async_update_reload_and_abort(self._get_reauth_entry(), data=data)
 
         self._abort_if_unique_id_configured()
-        return self.async_create_entry(title=me.get("login") or "Allegro", data=data)
+        return self.async_create_entry(title=title, data=data)
 
     # ---------- ponowne logowanie (refresh token wygasł / unieważniony) ----------
     async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:

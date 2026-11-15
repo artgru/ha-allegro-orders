@@ -35,7 +35,8 @@
       "auth_failed": "Sign-in failed: {error}",
       "cannot_connect": "Could not connect to Allegro.",
       "reauth_successful": "Signed in again.",
-      "wrong_account": "You signed in to a different Allegro account."
+      "wrong_account": "You signed in to a different Allegro account.",
+      "orders_forbidden": "No access to orders. Check the app permissions in Allegro (orders read). Details: {error}"
     }
   },
   "options": {

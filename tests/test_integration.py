@@ -200,3 +200,19 @@ async def test_card_template(hass: HomeAssistant, aioclient_mock) -> None:
     out = Template(card["content"], hass).async_render(parse_result=False)
     print(out)
     assert "| **P1-0042** |" in out and "**×2**" in out and "**BRAK_SKU**" in out
+
+
+async def test_flow_without_profile_scope(hass: HomeAssistant, aioclient_mock) -> None:
+    import base64, json
+    jwt = "x." + base64.urlsafe_b64encode(json.dumps({"user_name": "777"}).encode()).decode().rstrip("=") + ".sig"
+    aioclient_mock.post(f"{AUTH}/device?client_id=cid", json={"device_code": "d", "user_code": "U", "verification_uri_complete": "u", "expires_in": 60, "interval": 5})
+    aioclient_mock.post(f"{AUTH}/token", json={"access_token": jwt, "refresh_token": "r", "expires_in": 43199})
+    aioclient_mock.get(f"{API}/me", status=403, json={"errors": [{"code": "AccessDenied"}]})
+    aioclient_mock.get(f"{API}/order/checkout-forms", json={"checkoutForms": []})
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], CREDS)
+    await hass.async_block_till_done()
+    if result["type"] is not FlowResultType.CREATE_ENTRY:
+        result = await hass.config_entries.flow.async_configure(result["flow_id"])
+    assert result["type"] is FlowResultType.CREATE_ENTRY, result
+    assert result["result"].unique_id == "777"
