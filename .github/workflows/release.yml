@@ -1,0 +1,27 @@
+name: Release
+# Tworzy wydanie automatycznie, gdy zmieni się "version" w manifest.json
+on:
+  push:
+    branches: [main]
+    paths:
+      - custom_components/allegro_orders/manifest.json
+      - .github/workflows/release.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Utwórz wydanie dla nowej wersji
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(jq -r .version custom_components/allegro_orders/manifest.json)
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Wydanie $TAG już istnieje – pomijam."
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          fi
