@@ -1,0 +1,14 @@
+# Dashboard → Edytuj → Dodaj kartę → „Ręcznie” (YAML) → wklej
+type: markdown
+title: Zamówienia Allegro
+content: |
+  {%- set orders = state_attr('sensor.allegro_zamowienia', 'orders') or [] -%}
+  {%- if orders | count == 0 -%}
+  Brak zamówień do wysłania 🎉
+  {%- else -%}
+  | Data | Produkt | SKU | Wysyłka |
+  |:--|:--|:--|:--|
+  {% for o in orders -%}
+  | {{ o.date_display }} | {{ o.product | replace('|', '/') }}{% if o.quantity > 1 %} **×{{ o.quantity }}**{% endif %} | **{{ o.sku }}** | {{ o.shipping }}{% if o.dispatch_by %}<br><small>nadaj do {{ o.dispatch_by }}</small>{% endif %} |
+  {% endfor -%}
+  {%- endif %}

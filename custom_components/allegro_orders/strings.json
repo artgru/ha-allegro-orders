@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Allegro application",
+        "description": "Enter your app credentials from apps.developer.allegro.pl. The app must use the device flow.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client Secret",
+          "user_agent": "User-Agent (registered with Allegro)"
+        },
+        "data_description": {
+          "user_agent": "E.g. TPM/1.0 (+https://allegro.pl/uzytkownik/YourLogin)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in to Allegro again",
+        "description": "The token expired or was revoked. Confirm to get a new sign-in code.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client Secret",
+          "user_agent": "User-Agent (registered with Allegro)"
+        }
+      }
+    },
+    "progress": {
+      "wait_for_approval": "Open the link and approve access on your Allegro account:\n\n**[{url}]({url})**\n\nCode: **{code}**\n\nThis dialog continues automatically once approved."
+    },
+    "error": {
+      "invalid_client": "Allegro rejected the Client ID / Client Secret.",
+      "cannot_connect": "Could not connect to Allegro."
+    },
+    "abort": {
+      "already_configured": "This Allegro account is already configured.",
+      "auth_failed": "Sign-in failed: {error}",
+      "cannot_connect": "Could not connect to Allegro.",
+      "reauth_successful": "Signed in again.",
+      "wrong_account": "You signed in to a different Allegro account."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Which orders to show",
+        "data": {
+          "fulfillment_statuses": "Fulfillment statuses",
+          "only_paid": "Only paid (ready for processing)",
+          "max_orders": "Maximum number of orders",
+          "scan_interval_minutes": "Refresh every"
+        }
+      }
+    }
+  },
+  "selector": {
+    "fulfillment": {
+      "options": {
+        "NEW": "New",
+        "PROCESSING": "Processing",
+        "READY_FOR_SHIPMENT": "Ready for shipment",
+        "READY_FOR_PICKUP": "Ready for pickup",
+        "SENT": "Sent",
+        "PICKED_UP": "Picked up",
+        "CANCELLED": "Cancelled",
+        "SUSPENDED": "Suspended",
+        "RETURNED": "Returned"
+      }
+    }
+  }
+}

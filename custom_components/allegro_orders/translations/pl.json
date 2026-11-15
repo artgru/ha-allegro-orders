@@ -1,0 +1,69 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Aplikacja Allegro",
+        "description": "Podaj dane aplikacji z apps.developer.allegro.pl (te same, których używa skrypt Toolkit). Aplikacja musi mieć włączony typ „urządzenie” (Device flow).",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client Secret",
+          "user_agent": "User-Agent (zarejestrowany w Allegro)"
+        },
+        "data_description": {
+          "user_agent": "Np. TPM/1.0 (+https://allegro.pl/uzytkownik/TwojLogin) – taki sam jak w skrypcie."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Zaloguj ponownie do Allegro",
+        "description": "Token wygasł lub został unieważniony. Sprawdź dane i zatwierdź – pojawi się nowy kod logowania.",
+        "data": {
+          "client_id": "Client ID",
+          "client_secret": "Client Secret",
+          "user_agent": "User-Agent (zarejestrowany w Allegro)"
+        }
+      }
+    },
+    "progress": {
+      "wait_for_approval": "Otwórz link i zatwierdź dostęp aplikacji na swoim koncie Allegro:\n\n**[{url}]({url})**\n\nKod: **{code}**\n\nTo okno samo przejdzie dalej po zatwierdzeniu."
+    },
+    "error": {
+      "invalid_client": "Allegro nie przyjęło Client ID / Client Secret.",
+      "cannot_connect": "Nie udało się połączyć z Allegro."
+    },
+    "abort": {
+      "already_configured": "To konto Allegro jest już dodane.",
+      "auth_failed": "Logowanie nieudane: {error}",
+      "cannot_connect": "Nie udało się połączyć z Allegro.",
+      "reauth_successful": "Zalogowano ponownie.",
+      "wrong_account": "Zalogowano na inne konto Allegro niż to w integracji."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Które zamówienia pokazywać",
+        "data": {
+          "fulfillment_statuses": "Statusy realizacji",
+          "only_paid": "Tylko opłacone (gotowe do realizacji)",
+          "max_orders": "Maksymalna liczba zamówień",
+          "scan_interval_minutes": "Odświeżanie co"
+        }
+      }
+    }
+  },
+  "selector": {
+    "fulfillment": {
+      "options": {
+        "NEW": "Nowe",
+        "PROCESSING": "W realizacji",
+        "READY_FOR_SHIPMENT": "Do wysłania",
+        "READY_FOR_PICKUP": "Do odbioru",
+        "SENT": "Wysłane",
+        "PICKED_UP": "Odebrane",
+        "CANCELLED": "Anulowane",
+        "SUSPENDED": "Wstrzymane",
+        "RETURNED": "Zwrócone"
+      }
+    }
+  }
+}
