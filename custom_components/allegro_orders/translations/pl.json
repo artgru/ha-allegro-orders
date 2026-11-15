@@ -3,14 +3,14 @@
     "step": {
       "user": {
         "title": "Aplikacja Allegro",
-        "description": "Podaj dane aplikacji z apps.developer.allegro.pl (te same, których używa skrypt Toolkit). Aplikacja musi mieć włączony typ „urządzenie” (Device flow).",
+        "description": "Podaj dane aplikacji z {dev_portal} (te same, których używa skrypt Toolkit). Aplikacja musi mieć włączony typ „urządzenie” (Device flow).",
         "data": {
           "client_id": "Client ID",
           "client_secret": "Client Secret",
           "user_agent": "User-Agent (zarejestrowany w Allegro)"
         },
         "data_description": {
-          "user_agent": "Np. TPM/1.0 (+https://allegro.pl/uzytkownik/TwojLogin) – taki sam jak w skrypcie."
+          "user_agent": "Np. {ua_example} – taki sam jak w skrypcie."
         }
       },
       "reauth_confirm": {

@@ -3,14 +3,14 @@
     "step": {
       "user": {
         "title": "Allegro application",
-        "description": "Enter your app credentials from apps.developer.allegro.pl. The app must use the device flow.",
+        "description": "Enter your app credentials from {dev_portal}. The app must use the device flow.",
         "data": {
           "client_id": "Client ID",
           "client_secret": "Client Secret",
           "user_agent": "User-Agent (registered with Allegro)"
         },
         "data_description": {
-          "user_agent": "E.g. TPM/1.0 (+https://allegro.pl/uzytkownik/YourLogin)"
+          "user_agent": "E.g. {ua_example}"
         }
       },
       "reauth_confirm": {

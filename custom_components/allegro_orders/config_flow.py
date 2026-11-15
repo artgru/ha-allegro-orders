@@ -41,6 +41,12 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+PLACEHOLDERS = {
+    "dev_portal": "https://apps.developer.allegro.pl",
+    "ua_example": "TPM/1.0 (+https://allegro.pl/uzytkownik/TwojLogin)",
+}
+
+
 def _creds_schema(defaults: Mapping[str, Any]) -> vol.Schema:
     return vol.Schema(
         {
@@ -77,6 +83,7 @@ class AllegroOrdersConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=_creds_schema(user_input or self._creds),
             errors=errors,
+            description_placeholders=PLACEHOLDERS,
         )
 
     async def _start_device_flow(self) -> str | None:
@@ -164,6 +171,7 @@ class AllegroOrdersConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reauth_confirm",
             data_schema=_creds_schema(self._creds),
             errors=errors,
+            description_placeholders=PLACEHOLDERS,
         )
 
     @staticmethod
