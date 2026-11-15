@@ -1,12 +1,14 @@
 {
   "domain": "allegro_orders",
   "name": "Allegro – zamówienia",
-  "codeowners": ["@artgru"],
+  "codeowners": [
+    "@artgru"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/artgru/ha-allegro-orders",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/artgru/ha-allegro-orders/issues",
   "requirements": [],
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

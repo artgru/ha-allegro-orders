@@ -54,15 +54,15 @@
   "selector": {
     "fulfillment": {
       "options": {
-        "NEW": "Nowe",
-        "PROCESSING": "W realizacji",
-        "READY_FOR_SHIPMENT": "Do wysłania",
-        "READY_FOR_PICKUP": "Do odbioru",
-        "SENT": "Wysłane",
-        "PICKED_UP": "Odebrane",
-        "CANCELLED": "Anulowane",
-        "SUSPENDED": "Wstrzymane",
-        "RETURNED": "Zwrócone"
+        "new": "Nowe",
+        "processing": "W realizacji",
+        "ready_for_shipment": "Do wysłania",
+        "ready_for_pickup": "Do odbioru",
+        "sent": "Wysłane",
+        "picked_up": "Odebrane",
+        "cancelled": "Anulowane",
+        "suspended": "Wstrzymane",
+        "returned": "Zwrócone"
       }
     }
   }

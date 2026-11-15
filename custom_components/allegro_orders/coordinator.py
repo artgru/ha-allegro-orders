@@ -49,7 +49,7 @@ class AllegroOrdersCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
         opts = self.config_entry.options
         try:
             forms = await self.client.get_orders(
-                fulfillment=list(opts.get(CONF_FULFILLMENT, DEFAULT_FULFILLMENT)),
+                fulfillment=[str(x).upper() for x in opts.get(CONF_FULFILLMENT, DEFAULT_FULFILLMENT)],
                 only_paid=bool(opts.get(CONF_ONLY_PAID, DEFAULT_ONLY_PAID)),
                 max_orders=int(opts.get(CONF_MAX_ORDERS, DEFAULT_MAX_ORDERS)),
             )

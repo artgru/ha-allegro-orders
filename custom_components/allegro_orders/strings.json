@@ -54,15 +54,15 @@
   "selector": {
     "fulfillment": {
       "options": {
-        "NEW": "New",
-        "PROCESSING": "Processing",
-        "READY_FOR_SHIPMENT": "Ready for shipment",
-        "READY_FOR_PICKUP": "Ready for pickup",
-        "SENT": "Sent",
-        "PICKED_UP": "Picked up",
-        "CANCELLED": "Cancelled",
-        "SUSPENDED": "Suspended",
-        "RETURNED": "Returned"
+        "new": "New",
+        "processing": "Processing",
+        "ready_for_shipment": "Ready for shipment",
+        "ready_for_pickup": "Ready for pickup",
+        "sent": "Sent",
+        "picked_up": "Picked up",
+        "cancelled": "Cancelled",
+        "suspended": "Suspended",
+        "returned": "Returned"
       }
     }
   }

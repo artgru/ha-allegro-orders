@@ -173,7 +173,7 @@ async def test_options(hass: HomeAssistant, aioclient_mock) -> None:
     assert result["type"] is FlowResultType.FORM
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        {"fulfillment_statuses": ["SENT"], "only_paid": False, "max_orders": 10, "scan_interval_minutes": 15},
+        {"fulfillment_statuses": ["sent"], "only_paid": False, "max_orders": 10, "scan_interval_minutes": 15},
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()

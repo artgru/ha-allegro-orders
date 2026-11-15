@@ -179,9 +179,9 @@ class AllegroOrdersOptionsFlow(OptionsFlow):
 
         schema = vol.Schema(
             {
-                vol.Required(CONF_FULFILLMENT, default=DEFAULT_FULFILLMENT): selector.SelectSelector(
+                vol.Required(CONF_FULFILLMENT, default=[x.lower() for x in DEFAULT_FULFILLMENT]): selector.SelectSelector(
                     selector.SelectSelectorConfig(
-                        options=FULFILLMENT_STATUSES,
+                        options=[x.lower() for x in FULFILLMENT_STATUSES],
                         multiple=True,
                         mode=selector.SelectSelectorMode.LIST,
                         translation_key="fulfillment",
@@ -200,5 +200,13 @@ class AllegroOrdersOptionsFlow(OptionsFlow):
         )
         return self.async_show_form(
             step_id="init",
-            data_schema=self.add_suggested_values_to_schema(schema, self.config_entry.options),
+            data_schema=self.add_suggested_values_to_schema(
+                schema,
+                {
+                    **self.config_entry.options,
+                    CONF_FULFILLMENT: [
+                        x.lower() for x in self.config_entry.options.get(CONF_FULFILLMENT, DEFAULT_FULFILLMENT)
+                    ],
+                },
+            ),
         )
