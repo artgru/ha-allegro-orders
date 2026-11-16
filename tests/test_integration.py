@@ -31,6 +31,7 @@ ORDER = {
         {
             "offer": {"id": "18859203327", "name": "Vivanco 47022 adapter SCART", "external": {"id": "P1-0042"}},
             "quantity": 2,
+            "price": {"amount": "19.99", "currency": "PLN"},
             "boughtAt": "2026-11-15T13:20:00.000Z",
         },
         {
@@ -118,6 +119,9 @@ async def test_full_flow_and_sensor(hass: HomeAssistant, aioclient_mock) -> None
     assert first["date_display"]  # lokalna data
     assert orders[1]["sku"] == "BRAK_SKU"
     assert state.attributes["items"] == 3
+    assert first["price"] == 19.99 and first["total"] == 39.98
+    assert orders[1]["price"] is None and orders[1]["total"] is None
+    assert state.attributes["total_value"] == 39.98
 
     # zapytanie o zamówienia: filtry + nagłówki
     order_call = [c for c in aioclient_mock.mock_calls if "checkout-forms" in str(c[1])][-1]

@@ -9,6 +9,6 @@ content: |
   | Data | Produkt | SKU | Wysyłka |
   |:--|:--|:--|:--|
   {% for o in orders -%}
-  | {{ o.date_display }} | {{ o.product | replace('|', '/') }}{% if o.quantity > 1 %} **×{{ o.quantity }}**{% endif %} | **{{ o.sku }}** | {{ o.shipping }}{% if o.dispatch_by %}<br><small>nadaj do {{ o.dispatch_by }}</small>{% endif %} |
+  | {{ o.date_display }} | {{ o.product | replace('|', '/') }}{% if o.quantity > 1 %} **×{{ o.quantity }}**{% endif %}{% if o.total is not none %}<br><small>{{ '%.2f' | format(o.total) | replace('.', ',') }} zł</small>{% endif %} | **{{ o.sku }}** | {{ o.shipping }}{% if o.dispatch_by %}<br><small>nadaj do {{ o.dispatch_by }}</small>{% endif %} |
   {% endfor -%}
   {%- endif %}

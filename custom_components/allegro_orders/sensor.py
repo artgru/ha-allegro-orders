@@ -55,4 +55,6 @@ class AllegroOrdersSensor(CoordinatorEntity[AllegroOrdersCoordinator], SensorEnt
         return {
             "orders": rows,
             "items": sum(r["quantity"] for r in rows),
+            "total_value": round(sum(r["total"] or 0 for r in rows), 2),
+            "currency": rows[0]["currency"] if rows else "PLN",
         }

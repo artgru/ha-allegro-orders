@@ -17,8 +17,9 @@ Dane aplikacji podajesz w formularzu, więc **nie ma ich w repozytorium** (repo 
 
 `sensor.allegro_zamowienia`
 - stan: liczba zamówień spełniających filtr,
-- atrybut `orders`: lista pozycji (`date`, `date_display`, `product`, `sku`, `quantity`, `shipping`, `pickup_point`, `dispatch_by`, `status_label`, `buyer`, `order_id`, `offer_id`, `smart`),
-- atrybut `items`: łączna liczba sztuk.
+- atrybut `orders`: lista pozycji (`date`, `date_display`, `product`, `sku`, `quantity`, `price` (cena za sztukę), `total` (cena × sztuki), `currency`, `shipping`, `pickup_point`, `dispatch_by`, `status_label`, `buyer`, `order_id`, `offer_id`, `smart`),
+- atrybut `items`: łączna liczba sztuk,
+- atrybut `total_value`: łączna wartość pozycji na liście.
 
 Lista nie jest zapisywana w historii (recorder), żeby nie puchła baza.
 

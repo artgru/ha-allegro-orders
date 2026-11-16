@@ -81,6 +81,12 @@ def flatten_orders(forms: list[dict[str, Any]]) -> list[dict[str, Any]]:
             offer = item.get("offer") or {}
             sku = ((offer.get("external") or {}).get("id") or "").strip()
             bought = _local(item.get("boughtAt") or form.get("updatedAt"))
+            qty = int(item.get("quantity") or 1)
+            price = item.get("price") or {}
+            try:
+                unit = round(float(price.get("amount")), 2)
+            except (TypeError, ValueError):
+                unit = None
             rows.append(
                 {
                     "order_id": form.get("id"),
@@ -89,7 +95,10 @@ def flatten_orders(forms: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "product": offer.get("name") or "",
                     "offer_id": offer.get("id"),
                     "sku": sku or "BRAK_SKU",
-                    "quantity": int(item.get("quantity") or 1),
+                    "quantity": qty,
+                    "price": unit,
+                    "total": round(unit * qty, 2) if unit is not None else None,
+                    "currency": price.get("currency") or "PLN",
                     "shipping": method,
                     "pickup_point": pickup,
                     "smart": bool(delivery.get("smart")),
