@@ -220,3 +220,59 @@ async def test_flow_without_profile_scope(hass: HomeAssistant, aioclient_mock) -
         result = await hass.config_entries.flow.async_configure(result["flow_id"])
     assert result["type"] is FlowResultType.CREATE_ENTRY, result
     assert result["result"].unique_id == "777"
+
+
+async def _setup_with_order(hass, aioclient_mock):
+    entry = MockConfigEntry(
+        domain=DOMAIN, unique_id="1", title="x",
+        data={**CREDS, "token": {"access_token": "a", "refresh_token": "r", "expires_at": time.time() + 9999}},
+    )
+    entry.add_to_hass(hass)
+    aioclient_mock.get(f"{API}/order/checkout-forms", json={"checkoutForms": [ORDER]})
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    return entry
+
+
+async def test_set_status_service(hass: HomeAssistant, aioclient_mock) -> None:
+    await _setup_with_order(hass, aioclient_mock)
+    url = f"{API}/order/checkout-forms/29b6a6e0-aaaa/fulfillment"
+    aioclient_mock.put(url, status=204)
+    await hass.services.async_call(
+        DOMAIN, "set_status", {"order_id": "29b6a6e0-aaaa", "status": "processing"}, blocking=True
+    )
+    call = [c for c in aioclient_mock.mock_calls if c[0] == "PUT"][-1]
+    import json
+    assert json.loads(call[2]) == {"status": "PROCESSING"}
+    assert call[3]["Content-Type"] == "application/vnd.allegro.public.v1+json"
+
+
+async def test_status_select(hass: HomeAssistant, aioclient_mock) -> None:
+    await _setup_with_order(hass, aioclient_mock)
+    order_sel = "select.allegro_wybrane_zamowienie"
+    status_sel = "select.allegro_status_zamowienia"
+    st = hass.states.get(order_sel)
+    assert st is not None, hass.states.async_entity_ids("select")
+    assert st.state == "—"
+    assert hass.states.get(status_sel).state == "unavailable"
+    label = [o for o in st.attributes["options"] if "P1-0042" in o][0]
+    assert "BRAK_SKU" in label  # jedno zamówienie = jedna opcja, oba SKU
+    await hass.services.async_call("select", "select_option", {"entity_id": order_sel, "option": label}, blocking=True)
+    assert hass.states.get(status_sel).state == "Nowe"
+
+    aioclient_mock.put(f"{API}/order/checkout-forms/29b6a6e0-aaaa/fulfillment", status=204)
+    await hass.services.async_call(
+        "select", "select_option", {"entity_id": status_sel, "option": "W realizacji"}, blocking=True
+    )
+    put = [c for c in aioclient_mock.mock_calls if c[0] == "PUT"]
+    assert len(put) == 1 and '"PROCESSING"' in put[0][2]
+
+
+async def test_set_status_forbidden(hass: HomeAssistant, aioclient_mock) -> None:
+    from homeassistant.exceptions import HomeAssistantError
+    await _setup_with_order(hass, aioclient_mock)
+    aioclient_mock.put(f"{API}/order/checkout-forms/29b6a6e0-aaaa/fulfillment", status=403, json={"errors": []})
+    with pytest.raises(HomeAssistantError, match="orders:write"):
+        await hass.services.async_call(
+            DOMAIN, "set_status", {"order_id": "29b6a6e0-aaaa", "status": "sent"}, blocking=True
+        )

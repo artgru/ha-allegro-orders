@@ -66,5 +66,21 @@
         "returned": "Returned"
       }
     }
+  },
+  "services": {
+    "set_status": {
+      "name": "Set order status",
+      "description": "Changes the fulfillment status of an Allegro order.",
+      "fields": {
+        "order_id": {
+          "name": "Order ID",
+          "description": "order_id from the sensor's orders attribute."
+        },
+        "status": {
+          "name": "New status",
+          "description": "Fulfillment status to set."
+        }
+      }
+    }
   }
 }

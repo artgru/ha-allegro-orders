@@ -1,0 +1,22 @@
+set_status:
+  fields:
+    order_id:
+      required: true
+      example: "29b6a6e0-1234-11ee-9b5a-7f3c2a1b0c9d"
+      selector:
+        text:
+    status:
+      required: true
+      example: processing
+      selector:
+        select:
+          translation_key: fulfillment
+          options:
+            - new
+            - processing
+            - ready_for_shipment
+            - ready_for_pickup
+            - sent
+            - picked_up
+            - cancelled
+            - suspended

@@ -66,5 +66,21 @@
         "returned": "Zwrócone"
       }
     }
+  },
+  "services": {
+    "set_status": {
+      "name": "Zmień status zamówienia",
+      "description": "Zmienia status realizacji zamówienia w Allegro (Moja sprzedaż).",
+      "fields": {
+        "order_id": {
+          "name": "ID zamówienia",
+          "description": "order_id z atrybutu orders sensora."
+        },
+        "status": {
+          "name": "Nowy status",
+          "description": "Status realizacji do ustawienia."
+        }
+      }
+    }
   }
 }

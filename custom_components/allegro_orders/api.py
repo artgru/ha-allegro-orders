@@ -34,6 +34,10 @@ class AllegroAuthError(AllegroError):
     """Token nieważny i nie da się go odświeżyć – potrzebne ponowne logowanie."""
 
 
+class AllegroForbidden(AllegroError):
+    """Aplikacja nie ma wymaganego uprawnienia (scope)."""
+
+
 class AllegroAuthPending(AllegroError):
     """Użytkownik jeszcze nie zatwierdził dostępu (device flow)."""
 
@@ -194,6 +198,42 @@ class AllegroClient:
             except (aiohttp.ClientError, asyncio.TimeoutError) as err:
                 raise AllegroError(f"Błąd sieci: {err}") from err
         raise AllegroAuthError("Allegro odrzuciło token.")
+
+    async def put(self, path: str, body: dict[str, Any]) -> None:
+        import json as _json
+
+        for attempt in (0, 1):
+            token = await self._ensure_token(force=attempt == 1)
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": MIME,
+                "Content-Type": MIME,
+                "User-Agent": self._auth.user_agent,
+            }
+            try:
+                async with self._session.put(
+                    API_URL + path, data=_json.dumps(body), headers=headers, timeout=TIMEOUT
+                ) as resp:
+                    if resp.status == 401 and attempt == 0:
+                        continue
+                    text = await resp.text()
+                    if resp.status in (200, 202, 204):
+                        return
+                    if resp.status == 401:
+                        raise AllegroAuthError("Allegro odrzuciło token.")
+                    if resp.status == 403:
+                        raise AllegroForbidden(
+                            "Brak uprawnienia do zmiany zamówień – w apps.developer.allegro.pl włącz "
+                            "zarządzanie zamówieniami (allegro:api:orders:write) i zaloguj integrację ponownie."
+                        )
+                    raise AllegroError(f"PUT {path} → {resp.status}: {text[:300]}")
+            except (aiohttp.ClientError, asyncio.TimeoutError) as err:
+                raise AllegroError(f"Błąd sieci: {err}") from err
+        raise AllegroAuthError("Allegro odrzuciło token.")
+
+    async def set_fulfillment(self, order_id: str, status: str) -> None:
+        """Zmiana statusu realizacji zamówienia (Moja sprzedaż)."""
+        await self.put(f"/order/checkout-forms/{order_id}/fulfillment", {"status": status})
 
     async def get_me(self) -> dict[str, Any]:
         return await self.get("/me")

@@ -23,6 +23,14 @@ Dane aplikacji podajesz w formularzu, więc **nie ma ich w repozytorium** (repo 
 
 Lista nie jest zapisywana w historii (recorder), żeby nie puchła baza.
 
+## Zmiana statusu zamówienia
+
+- `select.allegro_wybrane_zamowienie` – wybierasz zamówienie z listy,
+- `select.allegro_status_zamowienia` – pokazuje jego status; zmiana tutaj zmienia status w Allegro,
+- usługa `allegro_orders.set_status` (`order_id`, `status`) – do automatyzacji i przycisków.
+
+Wymaga uprawnienia aplikacji Allegro do zarządzania zamówieniami (`allegro:api:orders:write`).
+
 ## Opcje (Konfiguruj)
 
 - statusy realizacji (domyślnie: Nowe, W realizacji, Do wysłania),

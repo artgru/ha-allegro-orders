@@ -49,3 +49,9 @@ DEFAULT_SCAN_MINUTES = 5
 # Ile zamówień maksymalnie przejrzeć przy filtrowaniu po stronie integracji
 MAX_SCANNED_ORDERS = 500
 PAGE_SIZE = 100
+
+# Statusy, na które można przestawić zamówienie (RETURNED ustawia Allegro samo)
+SETTABLE_STATUSES = [s for s in FULFILLMENT_STATUSES if s != "RETURNED"]
+SERVICE_SET_STATUS = "set_status"
+ATTR_ORDER_ID = "order_id"
+ATTR_STATUS = "status"

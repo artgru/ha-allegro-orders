@@ -6,17 +6,67 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+import voluptuous as vol
 
-from .api import AllegroAuth, AllegroClient
-from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_TOKEN, CONF_USER_AGENT
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.typing import ConfigType
+
+from .api import AllegroAuth, AllegroClient, AllegroError
+from .const import (
+    ATTR_ORDER_ID,
+    ATTR_STATUS,
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
+    CONF_TOKEN,
+    CONF_USER_AGENT,
+    DOMAIN,
+    SERVICE_SET_STATUS,
+    SETTABLE_STATUSES,
+)
 from .coordinator import AllegroOrdersCoordinator
 
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.SELECT]
 
 type AllegroConfigEntry = ConfigEntry[AllegroOrdersCoordinator]
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+SET_STATUS_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_ORDER_ID): cv.string,
+        vol.Required(ATTR_STATUS): vol.All(cv.string, vol.Upper, vol.In(SETTABLE_STATUSES)),
+    }
+)
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    async def _set_status(call: ServiceCall) -> None:
+        entries = [
+            e for e in hass.config_entries.async_loaded_entries(DOMAIN)
+        ]
+        if not entries:
+            raise HomeAssistantError("Integracja Allegro nie jest załadowana.")
+        order_id = call.data[ATTR_ORDER_ID].strip()
+        # zamówienie z listy którego konta? domyślnie pierwszego, które je zna
+        coordinator = next(
+            (e.runtime_data for e in entries if any(r["order_id"] == order_id for r in e.runtime_data.data or [])),
+            entries[0].runtime_data,
+        )
+        await async_change_status(coordinator, order_id, call.data[ATTR_STATUS])
+
+    hass.services.async_register(DOMAIN, SERVICE_SET_STATUS, _set_status, schema=SET_STATUS_SCHEMA)
+    return True
+
+
+async def async_change_status(coordinator: AllegroOrdersCoordinator, order_id: str, status: str) -> None:
+    try:
+        await coordinator.client.set_fulfillment(order_id, status)
+    except AllegroError as err:
+        raise HomeAssistantError(str(err)) from err
+    await coordinator.async_request_refresh()
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: AllegroConfigEntry) -> bool:
