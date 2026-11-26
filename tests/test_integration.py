@@ -19,6 +19,7 @@ API = "https://api.allegro.pl"
 ORDER = {
     "id": "29b6a6e0-aaaa",
     "buyer": {"login": "kupujacy1"},
+    "messageToSeller": "Proszę o fakturę | NIP 123",
     "status": "READY_FOR_PROCESSING",
     "fulfillment": {"status": "NEW"},
     "delivery": {
@@ -122,6 +123,7 @@ async def test_full_flow_and_sensor(hass: HomeAssistant, aioclient_mock) -> None
     assert first["price"] == 19.99 and first["total"] == 39.98
     assert orders[1]["price"] is None and orders[1]["total"] is None
     assert state.attributes["total_value"] == 39.98
+    assert first["message"] == "Proszę o fakturę | NIP 123"
 
     # zapytanie o zamówienia: filtry + nagłówki
     order_call = [c for c in aioclient_mock.mock_calls if "checkout-forms" in str(c[1])][-1]

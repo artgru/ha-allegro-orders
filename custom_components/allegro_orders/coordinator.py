@@ -77,6 +77,7 @@ def flatten_orders(forms: list[dict[str, Any]]) -> list[dict[str, Any]]:
         dispatch_to = _local(((delivery.get("time") or {}).get("dispatch") or {}).get("to"))
         status = (form.get("fulfillment") or {}).get("status") or ""
         buyer = (form.get("buyer") or {}).get("login") or ""
+        message = (form.get("messageToSeller") or "").strip() or None
         for item in form.get("lineItems") or []:
             offer = item.get("offer") or {}
             sku = ((offer.get("external") or {}).get("id") or "").strip()
@@ -106,6 +107,7 @@ def flatten_orders(forms: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "status": status,
                     "status_label": FULFILLMENT_LABELS.get(status, status),
                     "buyer": buyer,
+                    "message": message,
                 }
             )
     rows.sort(key=lambda r: r["date"] or "", reverse=True)
