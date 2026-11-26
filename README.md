@@ -47,6 +47,8 @@ Wklej [`examples/karta_zamowienia.yaml`](examples/karta_zamowienia.yaml) jako ka
 Refresh token Allegro jest ważny ok. 3 miesiące i odnawia się przy każdym użyciu. Jeśli zostanie unieważniony,
 Home Assistant pokaże „Wymagane ponowne uwierzytelnienie” – klikasz i zatwierdzasz nowy kod.
 
+Po zmianie uprawnień aplikacji w Allegro zaloguj się ponownie ręcznie: integracja → **Konfiguruj → Zaloguj ponownie do Allegro**.
+
 ## Aktualizacje
 
 Zmień `version` w `custom_components/allegro_orders/manifest.json`, zrób commit i utwórz Release na GitHubie

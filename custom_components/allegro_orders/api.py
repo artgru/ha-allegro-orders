@@ -224,7 +224,7 @@ class AllegroClient:
                     if resp.status == 403:
                         raise AllegroForbidden(
                             "Brak uprawnienia do zmiany zamówień – w apps.developer.allegro.pl włącz "
-                            "zarządzanie zamówieniami (allegro:api:orders:write) i zaloguj integrację ponownie."
+                            "zarządzanie zamówieniami (allegro:api:orders:write), a potem w HA: Allegro → Konfiguruj → Zaloguj ponownie."
                         )
                     raise AllegroError(f"PUT {path} → {resp.status}: {text[:300]}")
             except (aiohttp.ClientError, asyncio.TimeoutError) as err:

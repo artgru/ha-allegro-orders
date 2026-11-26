@@ -42,6 +42,13 @@
   "options": {
     "step": {
       "init": {
+        "title": "Allegro – zamówienia",
+        "menu_options": {
+          "settings": "Które zamówienia pokazywać",
+          "reauth": "Zaloguj ponownie do Allegro (np. po zmianie uprawnień aplikacji)"
+        }
+      },
+      "settings": {
         "title": "Które zamówienia pokazywać",
         "data": {
           "fulfillment_statuses": "Statusy realizacji",
@@ -50,6 +57,9 @@
           "scan_interval_minutes": "Odświeżanie co"
         }
       }
+    },
+    "abort": {
+      "reauth_started": "Rozpoczęto ponowne logowanie. Kliknij „Uwierzytelnij ponownie” przy integracji Allegro (Ustawienia → Urządzenia i usługi) i zatwierdź nowy kod."
     }
   },
   "selector": {

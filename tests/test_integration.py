@@ -176,6 +176,8 @@ async def test_options(hass: HomeAssistant, aioclient_mock) -> None:
     await hass.async_block_till_done()
 
     result = await hass.config_entries.options.async_init(entry.entry_id)
+    assert result["type"] is FlowResultType.MENU
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"next_step_id": "settings"})
     assert result["type"] is FlowResultType.FORM
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
@@ -278,3 +280,14 @@ async def test_set_status_forbidden(hass: HomeAssistant, aioclient_mock) -> None
         await hass.services.async_call(
             DOMAIN, "set_status", {"order_id": "29b6a6e0-aaaa", "status": "sent"}, blocking=True
         )
+
+
+async def test_options_reauth(hass: HomeAssistant, aioclient_mock) -> None:
+    entry = await _setup_with_order(hass, aioclient_mock)
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"next_step_id": "reauth"})
+    assert result["type"] is FlowResultType.ABORT and result["reason"] == "reauth_started"
+    await hass.async_block_till_done()
+    flows = hass.config_entries.flow.async_progress()
+    reauth = [f for f in flows if f["context"]["source"] == "reauth"]
+    assert reauth and reauth[0]["step_id"] == "reauth_confirm"

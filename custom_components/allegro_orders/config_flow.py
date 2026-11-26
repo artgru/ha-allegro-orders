@@ -208,6 +208,14 @@ class AllegroOrdersConfigFlow(ConfigFlow, domain=DOMAIN):
 
 class AllegroOrdersOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return self.async_show_menu(step_id="init", menu_options=["settings", "reauth"])
+
+    async def async_step_reauth(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        # ten sam proces co przy wygaśnięciu tokenu: nowy kod, zatwierdzenie w Allegro, nowy token
+        self.config_entry.async_start_reauth(self.hass)
+        return self.async_abort(reason="reauth_started")
+
+    async def async_step_settings(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(data=user_input)
 
@@ -233,7 +241,7 @@ class AllegroOrdersOptionsFlow(OptionsFlow):
             }
         )
         return self.async_show_form(
-            step_id="init",
+            step_id="settings",
             data_schema=self.add_suggested_values_to_schema(
                 schema,
                 {

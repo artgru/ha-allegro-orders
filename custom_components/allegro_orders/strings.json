@@ -42,6 +42,13 @@
   "options": {
     "step": {
       "init": {
+        "title": "Allegro orders",
+        "menu_options": {
+          "settings": "Which orders to show",
+          "reauth": "Sign in to Allegro again (e.g. after changing app permissions)"
+        }
+      },
+      "settings": {
         "title": "Which orders to show",
         "data": {
           "fulfillment_statuses": "Fulfillment statuses",
@@ -50,6 +57,9 @@
           "scan_interval_minutes": "Refresh every"
         }
       }
+    },
+    "abort": {
+      "reauth_started": "Re-authentication started. Click “Reconfigure/Authenticate” on the Allegro integration (Settings → Devices & services) and approve the new code."
     }
   },
   "selector": {
