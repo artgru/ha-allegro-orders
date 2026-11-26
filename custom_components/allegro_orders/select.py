@@ -9,7 +9,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import AllegroConfigEntry, async_change_status
-from .const import DOMAIN, FULFILLMENT_LABELS, SETTABLE_STATUSES
+from .const import CONF_SETTABLE, DEFAULT_SETTABLE, DOMAIN, FULFILLMENT_LABELS, SETTABLE_STATUSES
 from .coordinator import AllegroOrdersCoordinator
 
 NONE_OPTION = "—"
@@ -102,7 +102,20 @@ class AllegroStatusSelect(CoordinatorEntity[AllegroOrdersCoordinator], SelectEnt
         self._attr_unique_id = f"{entry.unique_id or entry.entry_id}_status_select"
         self._attr_device_info = _device(entry)
         self._order_select = order_select
-        self._attr_options = [FULFILLMENT_LABELS[s] for s in SETTABLE_STATUSES]
+        self._entry = entry
+
+    def _allowed(self) -> list[str]:
+        chosen = {str(x).upper() for x in self._entry.options.get(CONF_SETTABLE, DEFAULT_SETTABLE)}
+        return [s for s in SETTABLE_STATUSES if s in chosen]
+
+    @property
+    def options(self) -> list[str]:
+        allowed = self._allowed()
+        cur = self._current()
+        # bieżący status zawsze widoczny (inaczej select pokazałby „nieznany”), ale jego wybór nic nie zmienia
+        if cur and cur not in allowed:
+            allowed = [cur, *allowed]
+        return [FULFILLMENT_LABELS.get(s, s) for s in allowed]
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
@@ -128,8 +141,8 @@ class AllegroStatusSelect(CoordinatorEntity[AllegroOrdersCoordinator], SelectEnt
         return FULFILLMENT_LABELS.get(st) if st else None
 
     async def async_select_option(self, option: str) -> None:
-        status = next(s for s in SETTABLE_STATUSES if FULFILLMENT_LABELS[s] == option)
+        status = next((s for s in self._allowed() if FULFILLMENT_LABELS[s] == option), None)
         oid = self._order_select.selected_order_id
-        if not oid:
-            return
+        if not oid or status is None or status == self._current():
+            return  # status niedozwolony w ustawieniach albo bez zmiany
         await async_change_status(self.coordinator, oid, status)

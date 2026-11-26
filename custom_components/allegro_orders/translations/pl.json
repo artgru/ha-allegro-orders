@@ -54,7 +54,11 @@
           "fulfillment_statuses": "Statusy realizacji",
           "only_paid": "Tylko opłacone (gotowe do realizacji)",
           "max_orders": "Maksymalna liczba zamówień",
-          "scan_interval_minutes": "Odświeżanie co"
+          "scan_interval_minutes": "Odświeżanie co",
+          "settable_statuses": "Statusy, które można ustawić z listy wyboru"
+        },
+        "data_description": {
+          "settable_statuses": "Ogranicza encję „Allegro status zamówienia” (np. na tablecie). Usługa allegro_orders.set_status nie jest ograniczana."
         }
       }
     },

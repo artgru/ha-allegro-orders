@@ -55,3 +55,7 @@ SETTABLE_STATUSES = [s for s in FULFILLMENT_STATUSES if s != "RETURNED"]
 SERVICE_SET_STATUS = "set_status"
 ATTR_ORDER_ID = "order_id"
 ATTR_STATUS = "status"
+
+# Które statusy można ustawić z listy wyboru (select) – usługa set_status nie jest ograniczana
+CONF_SETTABLE = "settable_statuses"
+DEFAULT_SETTABLE = ["PROCESSING", "READY_FOR_SHIPMENT", "SENT"]

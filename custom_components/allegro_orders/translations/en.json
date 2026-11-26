@@ -54,7 +54,11 @@
           "fulfillment_statuses": "Fulfillment statuses",
           "only_paid": "Only paid (ready for processing)",
           "max_orders": "Maximum number of orders",
-          "scan_interval_minutes": "Refresh every"
+          "scan_interval_minutes": "Refresh every",
+          "settable_statuses": "Statuses that can be set from the select"
+        },
+        "data_description": {
+          "settable_statuses": "Limits the order status select entity. The allegro_orders.set_status action is not limited."
         }
       }
     },

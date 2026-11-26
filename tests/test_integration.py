@@ -181,7 +181,7 @@ async def test_options(hass: HomeAssistant, aioclient_mock) -> None:
     assert result["type"] is FlowResultType.FORM
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        {"fulfillment_statuses": ["sent"], "only_paid": False, "max_orders": 10, "scan_interval_minutes": 15},
+        {"fulfillment_statuses": ["sent"], "settable_statuses": ["sent"], "only_paid": False, "max_orders": 10, "scan_interval_minutes": 15},
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
@@ -291,3 +291,19 @@ async def test_options_reauth(hass: HomeAssistant, aioclient_mock) -> None:
     flows = hass.config_entries.flow.async_progress()
     reauth = [f for f in flows if f["context"]["source"] == "reauth"]
     assert reauth and reauth[0]["step_id"] == "reauth_confirm"
+
+
+async def test_status_select_limited(hass: HomeAssistant, aioclient_mock) -> None:
+    entry = await _setup_with_order(hass, aioclient_mock)
+    hass.config_entries.async_update_entry(entry, options={"settable_statuses": ["processing"]})
+    await hass.async_block_till_done()
+    order_sel, status_sel = "select.allegro_wybrane_zamowienie", "select.allegro_status_zamowienia"
+    label = [o for o in hass.states.get(order_sel).attributes["options"] if "P1-0042" in o][0]
+    await hass.services.async_call("select", "select_option", {"entity_id": order_sel, "option": label}, blocking=True)
+    st = hass.states.get(status_sel)
+    # bieżący (Nowe) + dozwolony (W realizacji); bez Anulowane
+    assert st.attributes["options"] == ["Nowe", "W realizacji"], st.attributes["options"]
+    assert st.state == "Nowe"
+    aioclient_mock.put(f"{API}/order/checkout-forms/29b6a6e0-aaaa/fulfillment", status=204)
+    await hass.services.async_call("select", "select_option", {"entity_id": status_sel, "option": "Nowe"}, blocking=True)
+    assert not [c for c in aioclient_mock.mock_calls if c[0] == "PUT"]  # bez zmiany

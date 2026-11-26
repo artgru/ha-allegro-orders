@@ -34,6 +34,7 @@ Wymaga uprawnienia aplikacji Allegro do zarządzania zamówieniami (`allegro:api
 ## Opcje (Konfiguruj)
 
 - statusy realizacji (domyślnie: Nowe, W realizacji, Do wysłania),
+- statusy, które można ustawić z listy wyboru (domyślnie: W realizacji, Do wysłania, Wysłane),
 - tylko opłacone (domyślnie tak),
 - maks. liczba zamówień (domyślnie 50),
 - odświeżanie co N minut (domyślnie 5).

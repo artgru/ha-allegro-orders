@@ -28,14 +28,17 @@ from .const import (
     CONF_MAX_ORDERS,
     CONF_ONLY_PAID,
     CONF_SCAN_MINUTES,
+    CONF_SETTABLE,
     CONF_TOKEN,
     CONF_USER_AGENT,
     DEFAULT_FULFILLMENT,
     DEFAULT_MAX_ORDERS,
     DEFAULT_ONLY_PAID,
     DEFAULT_SCAN_MINUTES,
+    DEFAULT_SETTABLE,
     DOMAIN,
     FULFILLMENT_STATUSES,
+    SETTABLE_STATUSES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -229,6 +232,14 @@ class AllegroOrdersOptionsFlow(OptionsFlow):
                         translation_key="fulfillment",
                     )
                 ),
+                vol.Required(CONF_SETTABLE, default=[x.lower() for x in DEFAULT_SETTABLE]): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[x.lower() for x in SETTABLE_STATUSES],
+                        multiple=True,
+                        mode=selector.SelectSelectorMode.LIST,
+                        translation_key="fulfillment",
+                    )
+                ),
                 vol.Required(CONF_ONLY_PAID, default=DEFAULT_ONLY_PAID): bool,
                 vol.Required(CONF_MAX_ORDERS, default=DEFAULT_MAX_ORDERS): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=1, max=200, step=1, mode=selector.NumberSelectorMode.BOX)
@@ -248,6 +259,9 @@ class AllegroOrdersOptionsFlow(OptionsFlow):
                     **self.config_entry.options,
                     CONF_FULFILLMENT: [
                         x.lower() for x in self.config_entry.options.get(CONF_FULFILLMENT, DEFAULT_FULFILLMENT)
+                    ],
+                    CONF_SETTABLE: [
+                        x.lower() for x in self.config_entry.options.get(CONF_SETTABLE, DEFAULT_SETTABLE)
                     ],
                 },
             ),
